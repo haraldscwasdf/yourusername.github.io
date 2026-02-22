@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCHIVE GAULTIER | Curated Jean Paul Gaultier Resale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a1a1a;
+            --accent: #d4af37;
+            --secondary: #f4f1ea;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--secondary);
+            color: var(--primary);
+            overflow-x: hidden;
+        }
+        
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        .cursor-dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--primary);
+        }
+        
+        .cursor-outline {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--primary);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        
+        .cursor-outline.hover {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(212, 175, 55, 0.1);
+            border-color: var(--accent);
+        }
+        
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        /* Product Card Hover */
+        .product-card {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .product-image {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        /* Filter active state */
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: var(--secondary);
+        }
+        
+        /* Modal Animation */
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.3s ease-out;
+        }
+        
+        /* Text reveal animation */
+        .reveal-text {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        }
+        
+        .char {
+            display: inline-block;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        
+        /* Stripe pattern background */
+        .stripe-bg {
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(212, 175, 55, 0.03) 10px,
+                rgba(212, 175, 55, 0.03) 20px
+            );
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            background-color: rgba(244, 241, 234, 0.9);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 nav-blur border-b border-gray-200 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <span class="serif text-2xl font-bold tracking-tighter">ARCHIVE<span class="text-yellow-600">GAULTIER</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#collection" class="text-sm uppercase tracking-widest hover:text-yellow-600 transition-colors cursor-pointer">Collection</a>
+                    <a href="#about" class="text-sm uppercase tracking-widest hover:text-yellow-600 transition-colors cursor-pointer">About</a>
+                    <a href="#authenticity" class="text-sm uppercase tracking-widest hover:text-yellow-600 transition-colors cursor-pointer">Authenticity</a>
+                    <button onclick="toggleCart()" class="relative p-2 hover:text-yellow-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full opacity-0 transition-opacity">0</span>
+                    </button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#collection" class="block px-3 py-2 text-base font-medium hover:bg-gray-50">Collection</a>
+                <a href="#about" class="block px-3 py-2 text-base font-medium hover:bg-gray-50">About</a>
+                <a href="#authenticity" class="block px-3 py-2 text-base font-medium hover:bg-gray-50">Authenticity</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden stripe-bg">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#f4f1ea]"></div>
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80" 
+                 alt="Fashion texture" 
+                 class="w-full h-full object-cover opacity-20">
+        </div>
+        
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+            <div class="mb-6 overflow-hidden">
+                <p class="text-sm md:text-base uppercase tracking-[0.3em] text-gray-600 mb-4 reveal-text">Est. 2024</p>
+            </div>
+            <h1 class="serif text-5xl md:text-7xl lg:text-9xl font-bold mb-6 leading-none tracking-tighter mix-blend-multiply">
+                <span class="block overflow-hidden"><span class="char inline-block">ICONIC</span></span>
+                <span class="block overflow-hidden text-yellow-600"><span class="char inline-block italic">PROVOCATION</span></span>
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10 text-gray-700 font-light leading-relaxed opacity-0 translate-y-4" id="hero-subtext">
+                Curated vintage and archival Jean Paul Gaultier pieces. 
+                Authenticated. Rare. Unapologetically bold.
+            </p>
+            <button onclick="document.getElementById('collection').scrollIntoView({behavior: 'smooth'})" 
+                    class="group relative px-8 py-4 bg-black text-white overflow-hidden rounded-none opacity-0 translate-y-4" id="hero-cta">
+                <span class="relative z-10 flex items-center gap-2 uppercase tracking-widest text-sm">
+                    Explore Archive
+                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </span>
+                <div class="absolute inset-0 bg-yellow-600 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="absolute bottom-10 left-10 hidden lg:block">
+            <div class="w-32 h-32 border border-gray-300 rounded-full flex items-center justify-center animate-spin-slow">
+                <span class="text-xs uppercase tracking-widest rotate-0">Scroll</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="bg-black text-white py-4 overflow-hidden border-y border-yellow-600">
+        <div class="marquee-container">
+            <div class="marquee-content text-sm uppercase tracking-widest font-bold">
+                <span class="mx-8">Authenticated Vintage</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Archive Pieces</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Runway Collections</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Worldwide Shipping</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Authenticated Vintage</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Archive Pieces</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Runway Collections</span>
+                <span class="mx-8 text-yellow-600">•</span>
+                <span class="mx-8">Worldwide Shipping</span>
+                <span class="mx-8 text-yellow-600">•</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collection Section -->
+    <section id="collection" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+            <div>
+                <h2 class="serif text-4xl md:text-6xl font-bold mb-4">Current Archive</h2>
+                <p class="text-gray-600 max-w-md">Each piece hand-selected and authenticated. From iconic striped knits to avant-garde runway specimens.</p>
+            </div>
+            
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-2 mt-6 md:mt-0" id="filters">
+                <button class="filter-btn active px-6 py-2 border border-black text-sm uppercase tracking-wider transition-all" data-filter="all">All</button>
+                <button class="filter-btn px-6 py-2 border border-black text-sm uppercase tracking-wider transition-all hover:bg-black hover:text-white" data-filter="knitwear">Knitwear</button>
+                <button class="filter-btn px-6 py-2 border border-black text-sm uppercase tracking-wider transition-all hover:bg-black hover:text-white" data-filter="outerwear">Outerwear</button>
+                <button class="filter-btn px-6 py-2 border border-black text-sm uppercase tracking-wider transition-all hover:bg-black hover:text-white" data-filter="accessories">Accessories</button>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="product-grid">
+            <!-- Products injected via JS -->
+        </div>
+
+        <div class="mt-16 text-center">
+            <button class="px-8 py-4 border-2 border-black uppercase tracking-widest text-sm hover:bg-black hover:text-white transition-all duration-300">
+                Load More Archives
+            </button>
+        </div>
+    </section>
+
+    <!-- About/Authentication Section -->
+    <section id="authenticity" class="py-24 bg-black text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="text-yellow-600 uppercase tracking-widest text-sm font-bold mb-4 block">Authentication Process</span>
+                    <h2 class="serif text-4xl md:text-5xl font-bold mb-8 leading-tight">Every Stitch<br>Tells a Story</h2>
+                    <div class="space-y-6 text-gray-300">
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-full border border-yellow-600 flex items-center justify-center flex-shrink-0 text-yellow-600 font-bold">01</div>
+                            <div>
+                                <h3 class="text-white font-bold mb-2">Provenance Verification</h3>
+                                <p class="text-sm leading-relaxed">Each item's history traced through collection records, previous ownership documentation, and manufacturing period analysis.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-full border border-yellow-600 flex items-center justify-center flex-shrink-0 text-yellow-600 font-bold">02</div>
+                            <div>
+                                <h3 class="text-white font-bold mb-2">Construction Analysis</h3>
+                                <p class="text-sm leading-relaxed">Microscopic examination of stitching patterns, label typography, and fabric composition against archival standards.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-full border border-yellow-600 flex items-center justify-center flex-shrink-0 text-yellow-600 font-bold">03</div>
+                            <div>
+                                <h3 class="text-white font-bold mb-2">Condition Grading</h3>
+                                <p class="text-sm leading-relaxed">Rigorous assessment using museum-standard criteria. Full transparency on wear, repairs, and preservation needs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="aspect-[3/4] bg-gray-900 relative overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80" 
+                             alt="Fashion detail" 
+                             class="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 right-8">
+                            <div class="border border-yellow-600 p-6 bg-black/50 backdrop-blur-sm">
+                                <p class="serif text-2xl italic mb-2">"Fashion is about suspense, surprise and fantasy."</p>
+                                <p class="text-sm text-yellow-600 uppercase tracking-widest">— Jean Paul Gaultier</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <h2 class="serif text-3xl md:text-5xl font-bold mb-6">Join the Inner Circle</h2>
+        <p class="text-gray-600 mb-10 max-w-xl mx-auto">Be the first to access rare drops, private sales, and archival pieces from the Gaultier universe.</p>
+        
+        <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" onsubmit="handleSubscribe(event)">
+            <input type="email" placeholder="Enter your email" required
+                   class="flex-1 px-6 py-4 border-2 border-black bg-transparent focus:outline-none focus:border-yellow-600 transition-colors">
+            <button type="submit" 
+                    class="px-8 py-4 bg-black text-white uppercase tracking-widest text-sm hover:bg-yellow-600 transition-colors">
+                Subscribe
+            </button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-16 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <span class="serif text-3xl font-bold tracking-tighter block mb-6">ARCHIVE<span class="text-yellow-600">GAULTIER</span></span>
+                    <p class="text-gray-400 max-w-sm mb-6">Curating the finest Jean Paul Gaultier archival pieces for the discerning collector. Authenticity guaranteed.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 border border-gray-700 flex items-center justify-center hover:border-yellow-600 hover:text-yellow-600 transition-colors">
+                            <span class="sr-only">Instagram</span>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-yellow-600">Shop</h3>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">New Arrivals</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Knitwear</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Outerwear</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Accessories</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-yellow-600">Support</h3>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Authentication</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2024 Archive Gaultier. Not affiliated with Jean Paul Gaultier brand.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy</a>
+                    <a href="#" class="hover:text-white">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto relative" onclick="event.stopPropagation()">
+                <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-2" id="modal-content">
+                    <!-- Content injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl z-[100] transform translate-x-full transition-transform duration-300">
+        <div class="h-full flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h2 class="serif text-2xl font-bold">Your Archive</h2>
+                <button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6" id="cart-items">
+                <p class="text-gray-500 text-center mt-10">Your archive is empty</p>
+            </div>
+            <div class="p-6 border-t bg-gray-50">
+                <div class="flex justify-between mb-4 text-lg font-bold">
+                    <span>Total</span>
+                    <span id="cart-total">$0</span>
+                </div>
+                <button class="w-full py-4 bg-black text-white uppercase tracking-widest text-sm hover:bg-yellow-600 transition-colors">
+                    Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = [
+            {
+                id: 1,
+                name: "SS96 Tattoo Print Mesh Top",
+                category: "knitwear",
+                price: 1200,
+                size: "M",
+                condition: "Excellent",
+                era: "1990s",
+                image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80",
+                description: "Iconic tattoo print mesh top from the legendary SS96 collection. Sheer navy mesh with intricate tattoo-inspired prints."
+            },
+            {
+                id: 2,
+                name: "Iconic Striped Breton Sweater",
+                category: "knitwear",
+                price: 850,
+                size: "L",
+                condition: "Very Good",
+                era: "1980s",
+                image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=80",
+                description: "Classic Gaultier striped knit with signature nautical influence. Wool blend with gold-tone button details."
+            },
+            {
+                id: 3,
+                name: "Cone Bra Leather Jacket",
+                category: "outerwear",
+                price: 3500,
+                size: "S",
+                condition: "Mint",
+                era: "1990s",
+                image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80",
+                description: "Rare leather jacket featuring the iconic cone bra silhouette. Museum-quality archival piece."
+            },
+            {
+                id: 4,
+                name: "Cyberbaba Print Shirt",
+                category: "outerwear",
+                price: 650,
+                size: "M",
+                condition: "Good",
+                era: "1990s",
+                image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=80",
+                description: "Vibrant Cyberbaba print shirt featuring religious iconography mixed with cyber aesthetics."
+            },
+            {
+                id: 5,
+                name: "Gold Chain Belt",
+                category: "accessories",
+                price: 450,
+                size: "OS",
+                condition: "Excellent",
+                era: "2000s",
+                image: "https://images.unsplash.com/photo-1624623278313-a930126a11c3?w=800&q=80",
+                description: "Heavy gold-tone chain belt with Gaultier engraved clasp. Perfect statement accessory."
+            },
+            {
+                id: 6,
+                name: "Madonna Era Corset",
+                category: "outerwear",
+                price: 2800,
+                size: "XS",
+                condition: "Very Good",
+                era: "1990s",
+                image: "https://images.unsplash.com/photo-1617331721458-bd3bd3f9c7f8?w=800&q=80",
+                description: "Authentic corset from the same era as Madonna's Blonde Ambition tour. Boned construction with lace-up back."
+            }
+        ];
+
+        let cart = [];
+        let currentFilter = 'all';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCursor();
+            initAnimations();
+            renderProducts();
+            initFilters();
+        });
+
+        // Custom Cursor
+        function initCursor() {
+            const dot = document.querySelector('.cursor-dot');
+            const outline = document.querySelector('.cursor-outline');
+            
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
+                
+                dot.style.left = `${posX}px`;
+                dot.style.top = `${posY}px`;
+                
+                outline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: "forwards" });
+            });
+
+            // Hover effects
+            const clickables = document.querySelectorAll('a, button, .product-card');
+            clickables.forEach(el => {
+                el.addEventListener('mouseenter', () => outline.classList.add('hover'));
+                el.addEventListener('mouseleave', () => outline.classList.remove('hover'));
+            });
+        }
+
+        // GSAP Animations
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Hero text reveal
+            gsap.to(".char", {
+                y: 0,
+                opacity: 1,
+                stagger: 0.05,
+                duration: 1,
+                ease: "power4.out",
+                delay: 0.5
+            });
+            
+            gsap.to("#hero-subtext", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 1
+            });
+            
+            gsap.to("#hero-cta", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 1.2
+            });
+
+            // Scroll reveals
+            gsap.utils.toArray('.product-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                    },
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    delay: i * 0.1
+                });
+            });
+        }
+
+        // Render Products
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            const filtered = currentFilter === 'all' 
+                ? products 
+                : products.filter(p => p.category === currentFilter);
+            
+            grid.innerHTML = filtered.map(product => `
+                <div class="product-card group cursor-pointer" onclick="openModal(${product.id})">
+                    <div class="aspect-[3/4] overflow-hidden bg-gray-100 mb-4 relative">
+                        <img src="${product.image}" alt="${product.name}" class="product-image w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                        <div class="absolute bottom-4 left-4 right-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <button class="w-full py-3 bg-white text-black uppercase tracking-widest text-xs font-bold hover:bg-yellow-600 hover:text-white transition-colors">
+                                Quick View
+                            </button>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="px-3 py-1 bg-white/90 backdrop-blur text-xs uppercase tracking-wider">${product.era}</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-lg leading-tight group-hover:text-yellow-600 transition-colors">${product.name}</h3>
+                            <span class="font-bold">$${product.price}</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Size ${product.size} • ${product.condition}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filters
+        function initFilters() {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    
+                    // Animate out
+                    gsap.to('.product-card', {
+                        opacity: 0,
+                        y: 20,
+                        duration: 0.3,
+                        onComplete: () => {
+                            renderProducts();
+                            gsap.fromTo('.product-card', 
+                                { opacity: 0, y: 20 },
+                                { opacity: 1, y: 0, duration: 0.5, stagger: 0.1 }
+                            );
+                        }
+                    });
+                });
+            });
+        }
+
+        // Modal
+        function openModal(productId) {
+            const product = products.find(p => p.id === productId);
+            const modal = document.getElementById('product-modal');
+            const content = document.getElementById('modal-content');
+            
+            content.innerHTML = `
+                <div class="aspect-[3/4] bg-gray-100">
+                    <img src="${product.image}" class="w-full h-full object-cover">
+                </div>
+                <div class="p-8 md:p-12 flex flex-col justify-center">
+                    <span class="text-yellow-600 uppercase tracking-widest text-sm font-bold mb-2">${product.era}</span>
+                    <h2 class="serif text-3xl md:text-4xl font-bold mb-4">${product.name}</h2>
+                    <p class="text-2xl font-bold mb-6">$${product.price}</p>
+                    
+                    <div class="space-y-4 mb-8 text-gray-600">
+                        <div class="flex justify-between border-b pb-2">
+                            <span>Size</span>
+                            <span class="font-bold text-black">${product.size}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span>Condition</span>
+                            <span class="font-bold text-black">${product.condition}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span>Category</span>
+                            <span class="font-bold text-black uppercase">${product.category}</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-8 leading-relaxed">${product.description}</p>
+                    
+                    <button onclick="addToCart(${product.id})" 
+                            class="w-full py-4 bg-black text-white uppercase tracking-widest text-sm hover:bg-yellow-600 transition-colors mb-4">
+                        Add to Archive
+                    </button>
+                    
+                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Authenticated & Ready to Ship</span>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Cart
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const isOpen = !sidebar.classList.contains('translate-x-full');
+            
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            cart.push(product);
+            updateCart();
+            closeModal();
+            toggleCart();
+            
+            // Show notification
+            const btn = document.createElement('div');
+            btn.className = 'fixed bottom-8 right-8 bg-black text-white px-6 py-4 shadow-2xl z-[200] transform translate-y-20 transition-transform';
+            btn.innerHTML = `<div class="flex items-center gap-3"><span class="text-yellow-600">✓</span> Added to Archive</div>`;
+            document.body.appendChild(btn);
+            
+            setTimeout(() => btn.classList.remove('translate-y-20'), 100);
+            setTimeout(() => {
+                btn.classList.add('translate-y-20');
+                setTimeout(() => btn.remove(), 300);
+            }, 2000);
+        }
+
+        function updateCart() {
+            const count = document.getElementById('cart-count');
+            const items = document.getElementById('cart-items');
+            const total = document.getElementById('cart-total');
+            
+            count.textContent = cart.length;
+            count.classList.toggle('opacity-0', cart.length === 0);
+            
+            if (cart.length === 0) {
+                items.innerHTML = '<p class="text-gray-500 text-center mt-10">Your archive is empty</p>';
+                total.textContent = '$0';
+                return;
+            }
+            
+            const sum = cart.reduce((acc, item) => acc + item.price, 0);
+            total.textContent = `$${sum.toLocaleString()}`;
+            
+            items.innerHTML = cart.map((item, idx) => `
+                <div class="flex gap-4 mb-6 pb-6 border-b">
+                    <div class="w-20 h-24 bg-gray-100 flex-shrink-0">
+                        <img src="${item.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm mb-1">${item.name}</h4>
+                        <p class="text-gray-600 text-sm mb-2">Size ${item.size}</p>
+                        <p class="font-bold">$${item.price}</p>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="text-gray-400 hover:text-red-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Newsletter
+        function handleSubscribe(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            
+            btn.textContent = 'Subscribed!';
+            btn.classList.add('bg-yellow-600');
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('bg-yellow-600');
+                e.target.reset();
+            }, 2000);
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-sm');
+            } else {
+                nav.classList.remove('shadow-sm');
+            }
+        });
+
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                const sidebar = document.getElementById('cart-sidebar');
+                if (!sidebar.classList.contains('translate-x-full')) {
+                    toggleCart();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
